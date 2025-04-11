@@ -20,7 +20,11 @@ export const generateYoutubeSummaryWorkflow = workflow.define({
   args: {
     url: v.string()
   },
-  handler: async (step, args): Promise<string | null> => {
+  handler: async (step, args): Promise<{
+    title: string,
+    rating: number,
+    feedback: string
+  }[][] | null> => {
     const { url } = args;
     const transcript: string = await step.runAction(internal.transcripts.getYoutubeTranscripts, {
       url
@@ -36,6 +40,21 @@ export const generateYoutubeSummaryWorkflow = workflow.define({
       transcript
     })
 
-    return summary;
+
+
+    const allTitles = await Promise.all([
+      step.runAction(internal.agents.storyTellerAgent, {
+        summary
+      }),
+      step.runAction(internal.agents.michaelScottAgent, {
+        summary
+      })
+    ])
+
+    const reviews = await Promise.all(
+      allTitles.flat().map(title => step.runAction(internal.reviewers.engagementReviewer, { title }))
+    )
+
+    return reviews;
   }
 })

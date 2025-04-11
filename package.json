@@ -11,6 +11,7 @@
   "dependencies": {
     "@convex-dev/workflow": "^0.2.1",
     "@convex-dev/workpool": "^0.2.7",
+    "@google/genai": "^0.8.0",
     "@google/generative-ai": "^0.24.0",
     "convex": "^1.23.0",
     "convex-helpers": "^0.1.79",
